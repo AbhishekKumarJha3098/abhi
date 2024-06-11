@@ -25,32 +25,28 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
-  const handleSubmit = async (event) => {
+  // Storing user credentials in local storage for demonstration purposes
+  const saveUserCredentials = (email, password) => {
+    localStorage.setItem('user', JSON.stringify({ email, password }));
+  };
+
+  const handleSubmit = (event) => {
     event.preventDefault();
+    const storedUser = JSON.parse(localStorage.getItem('user'));
 
-    try {
-      const response = await fetch('http://localhost:8080/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username: email, password: password }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        window.alert('Login successful!');
-        window.location.href = '/home'; // or use useNavigate from react-router-dom for navigation
-        localStorage.setItem('accessToken', data.accessToken);
-      } else {
-        throw new Error(data.message || 'Login failed');
-      }
-    } catch (error) {
+    if (storedUser && storedUser.email === email && storedUser.password === password) {
+      window.alert('Login successful!');
+      window.location.href = '/home';
+    } else {
       setError('Invalid email or password');
       window.alert('Login failed: Invalid email or password');
     }
   };
+
+  // Save a sample user for login demonstration
+  React.useEffect(() => {
+    saveUserCredentials('abhi@example.com', '112345'); // Example user
+  }, []);
 
   return (
     <ThemeProvider theme={theme}>
